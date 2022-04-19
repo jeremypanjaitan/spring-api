@@ -1,9 +1,12 @@
 package com.domain.controllers;
 
+import com.domain.dto.JsonResponse;
 import com.domain.models.entities.Product;
 import com.domain.services.ProductService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,27 +24,47 @@ public class ProductController {
     private ProductService productService;
 
     @PostMapping
-    public Product createOne(@RequestBody Product product) {
-        return productService.save(product);
+    public JsonResponse<Product> createOne(@RequestBody Product product) {
+        Product savedProduct = productService.save(product);
+        return new JsonResponse<Product>(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), savedProduct);
     }
 
     @GetMapping
-    public Iterable<Product> findAll() {
-        return productService.findAll();
+    public JsonResponse<Iterable<Product>> findAll() {
+        Iterable<Product> products = productService.findAll();
+        return new JsonResponse<Iterable<Product>>(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), products);
     }
 
     @GetMapping("/{id}")
-    public Product findOne(@PathVariable("id") Long id) {
-        return productService.findOne(id);
+    public JsonResponse<Product> findOne(@PathVariable("id") Long id) {
+        Product product = productService.findOne(id);
+        if (product == null) {
+            return new JsonResponse<Product>(HttpStatus.BAD_REQUEST.value(), "data not found",
+                    null);
+        } else {
+            return new JsonResponse<Product>(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), product);
+        }
     }
 
     @PutMapping
-    public Product update(@RequestBody Product product) {
-        return productService.save(product);
+    public JsonResponse<Product> update(@RequestBody Product product) {
+        Product productAvailable = productService.findOne(product.getId());
+        if (productAvailable == null) {
+            return new JsonResponse<Product>(HttpStatus.BAD_REQUEST.value(), "data not found",
+                    null);
+        }
+        Product updatedProduct = productService.save(product);
+        return new JsonResponse<Product>(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), updatedProduct);
     }
 
     @DeleteMapping("/{id}")
-    public void removeOne(@PathVariable("id") Long id) {
-        productService.removeOne(id);
+    public JsonResponse<Object> removeOne(@PathVariable("id") Long id) {
+        try {
+            productService.removeOne(id);
+            return new JsonResponse<Object>(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), null);
+        } catch (EmptyResultDataAccessException err) {
+            return new JsonResponse<Object>(HttpStatus.BAD_REQUEST.value(), "data not found",
+                    null);
+        }
     }
 }
