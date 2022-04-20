@@ -27,6 +27,11 @@ public class ProductService {
         return productRepo.save(product);
     }
 
+    public Product update(Product product) {
+        productCacheRepo.deleteProduct(product.getId());
+        return productRepo.save(product);
+    }
+
     public Product findOne(Long id) {
         ProductCache productCache;
         productCache = productCacheRepo.findProductById(id);

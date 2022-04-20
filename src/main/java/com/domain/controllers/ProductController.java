@@ -53,7 +53,7 @@ public class ProductController {
             return new JsonResponse<Product>(HttpStatus.BAD_REQUEST.value(), "data not found",
                     null);
         }
-        Product updatedProduct = productService.save(product);
+        Product updatedProduct = productService.update(product);
         return new JsonResponse<Product>(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), updatedProduct);
     }
 
