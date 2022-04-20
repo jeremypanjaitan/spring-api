@@ -27,4 +27,9 @@ public class ProductCacheRepo {
         return null;
     }
 
+    public String deleteProduct(Long id) {
+        template.opsForHash().delete(HASH_KEY, id);
+        return "product removed !!";
+    }
+
 }

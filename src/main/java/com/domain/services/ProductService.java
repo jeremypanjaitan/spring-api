@@ -31,8 +31,6 @@ public class ProductService {
         ProductCache productCache;
         productCache = productCacheRepo.findProductById(id);
         if (productCache != null) {
-            System.out.println("here");
-            System.out.println(productCache.getName());
             return new Product(productCache.getId(), productCache.getName(), productCache.getDescription(),
                     productCache.getPrice());
         }
@@ -54,6 +52,7 @@ public class ProductService {
 
     public void removeOne(Long id) {
         productRepo.deleteById(id);
+        productCacheRepo.deleteProduct(id);
     }
 
     public List<Product> findByName(String name) {
