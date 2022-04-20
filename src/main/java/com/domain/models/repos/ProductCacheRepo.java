@@ -20,11 +20,7 @@ public class ProductCacheRepo {
     }
 
     public ProductCache findProductById(Long id) {
-        Object result = template.opsForHash().get(HASH_KEY, id);
-        if (result != null) {
-            return (ProductCache) result;
-        }
-        return null;
+        return (ProductCache) template.opsForHash().get(HASH_KEY, id);
     }
 
     public String deleteProduct(Long id) {
